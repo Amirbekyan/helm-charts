@@ -1,0 +1,9 @@
+apiVersion: v2
+name: frigate
+description: A Helm chart for Kubernetes
+maintainers:
+- name: Amirbekyan
+  email: mousheghamirbekyan@gmail.com
+type: application
+version: 0.0.1
+appVersion: "latest"

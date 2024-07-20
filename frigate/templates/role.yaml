@@ -1,0 +1,10 @@
+{{- if .Values.role }}
+kind: {{ .Values.role.type }}
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "frigate.serviceAccountName" . }}
+  labels:
+    {{- include "frigate.labels" . | nindent 4 }}
+rules:
+  {{- toYaml .Values.role.rules | nindent 2 }}
+{{- end }}
