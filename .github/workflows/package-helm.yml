@@ -1,0 +1,41 @@
+name: Package and Push Helm Chart
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    permissions:
+      contents: write
+      packages: write
+      pages: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'Vorking CI Bot'
+          git config --global user.email 'ci@vorking.net'
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+
+      # - name: Add repos
+      #   run: |
+      #     helm repo add jetstack https://charts.jetstack.io
+      #     helm repo add nginx https://kubernetes.github.io/ingress-nginx
+      #     helm repo add karpenter https://charts.karpenter.sh
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.6.0
+        with:
+          packages_with_index: true
+          pages_branch: gh-pages
+        # env:
+        #   CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
