@@ -141,6 +141,12 @@ additionalSecrets: []
   #   data:
   #     csrf: ""
 
+persistence:
+  enabled: false
+  # volumeName: memos-data
+  # storageClass: local-path
+  # size: 5Gi
+
 # Additional volumes on the output Deployment definition.
 volumes: []
 # - name: foo
