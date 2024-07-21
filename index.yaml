@@ -3,6 +3,19 @@ entries:
   frigate:
   - apiVersion: v2
     appVersion: latest
+    created: "2024-07-21T01:00:41.406526966Z"
+    description: A Helm chart for Kubernetes
+    digest: c3d38152487d0c9e9a1ef3cadcc5bfffe8832c40928dc47759c2459a0fe844f7
+    maintainers:
+    - email: mousheghamirbekyan@gmail.com
+      name: Amirbekyan
+    name: frigate
+    type: application
+    urls:
+    - frigate-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
+    appVersion: latest
     created: "2024-07-21T00:27:03.92068366Z"
     description: A Helm chart for Kubernetes
     digest: 3a4db59d66a926ffeb21f5aaffc9f852ef9a68b0917b4179b87c3c6b374d80ef
@@ -14,4 +27,4 @@ entries:
     urls:
     - frigate-0.0.2.tgz
     version: 0.0.2
-generated: "2024-07-21T00:27:03.920690112Z"
+generated: "2024-07-21T01:00:41.406536203Z"
