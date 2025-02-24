@@ -26,7 +26,7 @@ spec:
           persistentVolumeClaim:
             claimName: {{- printf "%s-pvc" ( include "twentycrm.dbname" .) }}
       containers:
-        - name: {{ include "twentycrm.dbname" . }}
+        - name: postgres
           image: {{ .Values.postgresql.image }}
           imagePullPolicy: Always
           {{- with .Values.postgresql.env }}
