@@ -1,0 +1,51 @@
+{{- if .Values.postgresql.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ include "twentycrm.dbname" . }}
+  name: {{ include "twentycrm.dbname" . }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ include "twentycrm.dbname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "twentycrm.dbname" . }}
+    spec:
+      volumes:
+        - name: {{- printf "%s-data" ( include "twentycrm.dbname" .) }}
+          persistentVolumeClaim:
+            claimName: {{- printf "%s-pvc" ( include "twentycrm.dbname" .) }}
+      containers:
+        - name: {{ include "twentycrm.dbname" . }}
+          image: {{ .Values.postgresql.image }}
+          imagePullPolicy: Always
+          {{- with .Values.postgresql.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - containerPort: 5432
+              name: tcp
+              protocol: TCP
+          {{- with .Values.postgresql.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          stdin: true
+          tty: true
+          volumeMounts:
+            - mountPath: /home/postgres/pgdata
+              name: {{- printf "%s-data" ( include "twentycrm.dbname" .) }}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+{{- end }}
