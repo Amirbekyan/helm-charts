@@ -3,7 +3,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: {{ include "twentycrm.dbname" . }}
+    {{- include "twentycrm.labels" . | nindent 4 }}
+    app.twentycrm/component: {{ include "twentycrm.dbname" . }}
   name: {{ include "twentycrm.dbname" . }}
 spec:
   progressDeadlineSeconds: 600
@@ -15,12 +16,15 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: {{ include "twentycrm.dbname" . }}
+      {{- include "twentycrm.selectorLabels" . | nindent 6 }}
+      app.twentycrm/component: {{ include "twentycrm.dbname" . }}
   template:
     metadata:
       labels:
-        app: {{ include "twentycrm.dbname" . }}
+        {{- include "twentycrm.labels" . | nindent 4 }}
+        app.twentycrm/component: {{ include "twentycrm.dbname" . }}
     spec:
+      serviceAccountName: {{ include "twentycrm.serviceAccountName" . }}
       volumes:
         - name: {{- printf "%s-data" ( include "twentycrm.dbname" .) }}
           persistentVolumeClaim:

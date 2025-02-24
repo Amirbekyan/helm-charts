@@ -3,7 +3,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: {{ include "twentycrm.redisname" . }}
+    {{- include "twentycrm.labels" . | nindent 4 }}
+    app.twentycrm/component: {{ include "twentycrm.redisname" . }}
   name: {{ include "twentycrm.redisname" . }}
 spec:
   progressDeadlineSeconds: 600
@@ -15,12 +16,15 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: {{ include "twentycrm.redisname" . }}
+      {{- include "twentycrm.selectorLabels" . | nindent 6 }}
+      app.twentycrm/component: {{ include "twentycrm.redisname" . }}
   template:
     metadata:
       labels:
-        app: {{ include "twentycrm.redisname" . }}
+        {{- include "twentycrm.labels" . | nindent 4 }}
+        app.twentycrm/component: {{ include "twentycrm.redisname" . }}
     spec:
+      serviceAccountName: {{ include "twentycrm.serviceAccountName" . }}
       containers:
         - name: redis
           image: {{ .Values.redis.image }}

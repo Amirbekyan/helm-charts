@@ -2,7 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: {{ include "twentycrm.workername" . }}
+    {{- include "twentycrm.labels" . | nindent 4 }}
+    app.twentycrm/component: {{ include "twentycrm.workername" . }}
   name: {{ include "twentycrm.workername" . }}
 spec:
   progressDeadlineSeconds: 600
@@ -14,12 +15,15 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: {{ include "twentycrm.workername" . }}
+      {{- include "twentycrm.selectorLabels" . | nindent 6 }}
+      app.twentycrm/component: {{ include "twentycrm.workername" . }}
   template:
     metadata:
       labels:
-        app: {{ include "twentycrm.workername" . }}
+        {{- include "twentycrm.labels" . | nindent 4 }}
+        app.twentycrm/component: {{ include "twentycrm.workername" . }}
     spec:
+      serviceAccountName: {{ include "twentycrm.serviceAccountName" . }}
       containers:
         - name: twentycrm
           image: {{ .Values.worker.image }}
