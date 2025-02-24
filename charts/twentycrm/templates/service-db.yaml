@@ -3,6 +3,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "twentycrm.dbname" . }}
+  labels:
+    {{- include "twentycrm.labels" . | nindent 4 }}
+    app.twentycrm/component: {{ include "twentycrm.dbname" . }}
 spec:
   internalTrafficPolicy: Cluster
   ports:
@@ -10,7 +13,8 @@ spec:
       protocol: TCP
       targetPort: 5432
   selector:
-    app: {{ include "twentycrm.dbname" . }}
+    {{- include "twentycrm.selectorLabels" . | nindent 4 }}
+    app.twentycrm/component: {{ include "twentycrm.dbname" . }}
   sessionAffinity: ClientIP
   sessionAffinityConfig:
     clientIP:

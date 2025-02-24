@@ -2,6 +2,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{- printf "%s-pvc" ( include "twentycrm.servername" .) }}
+  labels:
+    {{- include "twentycrm.labels" . | nindent 4 }}
 spec:
   storageClassName: {{- default .Values.persistence.default.storageClass .Values.persistence.server.storageClass }}
   accessModes:
