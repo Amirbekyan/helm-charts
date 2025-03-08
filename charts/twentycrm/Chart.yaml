@@ -1,0 +1,9 @@
+apiVersion: v2
+name: twentycrm
+description: A Helm chart for Twenty CRM by TwentyHQ
+maintainers:
+- name: Amirbekyan
+  email: mousheghamirbekyan@gmail.com
+type: application
+version: 0.1.0
+appVersion: 0.42.0

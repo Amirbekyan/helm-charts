@@ -1,0 +1,23 @@
+{{- if .Values.postgresql.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "twentycrm.dbname" . }}
+  labels:
+    {{- include "twentycrm.labels" . | nindent 4 }}
+    app.twentycrm/component: {{ include "twentycrm.dbname" . }}
+spec:
+  internalTrafficPolicy: Cluster
+  ports:
+    - port: 5432
+      protocol: TCP
+      targetPort: 5432
+  selector:
+    {{- include "twentycrm.selectorLabels" . | nindent 4 }}
+    app.twentycrm/component: {{ include "twentycrm.dbname" . }}
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  type: ClusterIP
+{{- end }}

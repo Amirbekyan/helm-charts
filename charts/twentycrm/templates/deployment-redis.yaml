@@ -1,0 +1,46 @@
+{{- if .Values.redis.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "twentycrm.labels" . | nindent 4 }}
+    app.twentycrm/component: {{ include "twentycrm.redisname" . }}
+  name: {{ include "twentycrm.redisname" . }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "twentycrm.selectorLabels" . | nindent 6 }}
+      app.twentycrm/component: {{ include "twentycrm.redisname" . }}
+  template:
+    metadata:
+      labels:
+        {{- include "twentycrm.labels" . | nindent 8 }}
+        app.twentycrm/component: {{ include "twentycrm.redisname" . }}
+    spec:
+      serviceAccountName: {{ include "twentycrm.serviceAccountName" . }}
+      containers:
+        - name: redis
+          image: {{ .Values.redis.image }}
+          imagePullPolicy: Always
+          {{- with .Values.redis.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - containerPort: 6379
+              name: redis
+              protocol: TCP
+          {{- with .Values.redis.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+{{- end }}

@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "twentycrm.labels" . | nindent 4 }}
+    app.twentycrm/component: {{ include "twentycrm.servername" . }}
+  name: {{ include "twentycrm.servername" . }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "twentycrm.selectorLabels" . | nindent 6 }}
+      app.twentycrm/component: {{ include "twentycrm.servername" . }}
+  template:
+    metadata:
+      labels:
+        {{- include "twentycrm.labels" . | nindent 8 }}
+        app.twentycrm/component: {{ include "twentycrm.servername" . }}
+    spec:
+      serviceAccountName: {{ include "twentycrm.serviceAccountName" . }}
+      volumes:
+        - name: {{ printf "%s-data" ( include "twentycrm.servername" .) }}
+          persistentVolumeClaim:
+            claimName: {{ printf "%s-pvc" ( include "twentycrm.servername" .) }}
+        - name: {{ printf "%s-docker-data" ( include "twentycrm.name" .) }}
+          persistentVolumeClaim:
+            claimName: {{ printf "%s-docker-data-pvc" ( include "twentycrm.name" .) }}
+      containers:
+        - name: twentycrm
+          image: {{ .Values.server.image }}
+          imagePullPolicy: Always
+          {{- with .Values.server.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - containerPort: 3000
+              name: http-tcp
+              protocol: TCP
+          {{- with .Values.server.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          stdin: true
+          tty: true
+          volumeMounts:
+            - mountPath: /app/packages/twenty-server/.local-storage
+              name: {{ printf "%s-data" ( include "twentycrm.servername" .) }}
+            - mountPath: /app/docker-data
+              name: {{ printf "%s-docker-data" ( include "twentycrm.name" .) }}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always

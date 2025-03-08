@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "twentycrm.labels" . | nindent 4 }}
+    app.twentycrm/component: {{ include "twentycrm.workername" . }}
+  name: {{ include "twentycrm.workername" . }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "twentycrm.selectorLabels" . | nindent 6 }}
+      app.twentycrm/component: {{ include "twentycrm.workername" . }}
+  template:
+    metadata:
+      labels:
+        {{- include "twentycrm.labels" . | nindent 8 }}
+        app.twentycrm/component: {{ include "twentycrm.workername" . }}
+    spec:
+      serviceAccountName: {{ include "twentycrm.serviceAccountName" . }}
+      containers:
+        - name: twentycrm
+          image: {{ .Values.worker.image }}
+          imagePullPolicy: Always
+          {{- with .Values.worker.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          command:
+            - yarn
+            - worker:prod
+          {{- with .Values.worker.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          stdin: true
+          tty: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
