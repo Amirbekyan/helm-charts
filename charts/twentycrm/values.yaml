@@ -1,0 +1,161 @@
+## THE BELOW COMMENTED OUT SECTION IS NOT YET IMPLEMENTED BUT A MUST
+## TO HAVE SET OF FEATURES IN CASE THE CHART IS USED FURTHER ON
+# # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+# livenessProbe:
+#   httpGet:
+#     path: /
+#     port: http
+# readinessProbe:
+#   httpGet:
+#     path: /
+#     port: http
+
+# # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+autoscaling:
+  enabled: false
+#   minReplicas: 1
+#   maxReplicas: 100
+#   targetCPUUtilizationPercentage: 80
+#   # targetMemoryUtilizationPercentage: 80
+
+# nodeSelector: {}
+
+# tolerations: []
+
+# affinity: {}
+## END OF PLANNED IMPLEMENTATIONS SECTION
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+postgresql:
+  enabled: true
+  image: twentycrm/twenty-postgres-spilo:latest
+  env:
+    - name: PGUSER_SUPERUSER
+      value: "postgres"
+    - name: PGPASSWORD_SUPERUSER
+      value: "postgres"
+    - name: SPILO_PROVIDER
+      value: "local"
+    - name: ALLOW_NOSSL
+      value: "true"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "1024Mi"
+      cpu: "1000m"
+
+redis:
+  enabled: true
+  image: redis/redis-stack-server:latest
+  env:
+    - name: PORT
+      value: "6379"
+  resources:
+    requests:
+      memory: "1024Mi"
+      cpu: "250m"
+    limits:
+      memory: "2048Mi"
+      cpu: "500m"
+
+server:
+  image: twentycrm/twenty:latest
+  env:
+    - name: NODE_PORT
+      value: "3000"
+    - name: SERVER_URL
+      value: "https://crm.example.com:443"
+    - name: PG_DATABASE_URL
+      value: "postgres://postgres:postgres@twentycrm-db.twentycrm.svc.cluster.local/default"
+    - name: REDIS_URL
+      value: "redis://twentycrm-redis.twentycrm.svc.cluster.local:6379"
+    - name: SIGN_IN_PREFILLED
+      value: "false"
+    - name: STORAGE_TYPE
+      value: "local"
+    - name: ACCESS_TOKEN_EXPIRES_IN
+      value: "7d"
+    - name: LOGIN_TOKEN_EXPIRES_IN
+      value: "1h"
+    - name: APP_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: tokens
+          key: accessToken
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "1024Mi"
+      cpu: "1000m"
+
+worker:
+  image: twentycrm/twenty:latest
+  env:
+    - name: SERVER_URL
+      value: "https://crm.example.com:443"
+    - name: PG_DATABASE_URL
+      value: "postgres://postgres:postgres@twentycrm-db.twentycrm.svc.cluster.local/default"
+    - name: DISABLE_DB_MIGRATIONS
+      value: "false" # it already runs on the server
+    - name: STORAGE_TYPE
+      value: "local"
+    - name: REDIS_URL
+      value: "redis://twentycrm-redis.twentycrm.svc.cluster.local:6379"
+    - name: APP_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: tokens
+          key: accessToken
+  resources:
+    requests:
+      memory: "1024Mi"
+      cpu: "250m"
+    limits:
+      memory: "2048Mi"
+      cpu: "1000m"
+
+persistence:
+  default:
+    storageClass: local-path
+    size: 10Gi
+  db:
+    storageClass: local-path
+    size: 10Gi
+  server:
+    storageClass: local-path
+    size: 10Gi
+  data:
+    storageClass: local-path
+    size: 100Mi
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # nginx.ingress.kubernetes.io/configuration-snippet: |
+    #   more_set_headers "X-Forwarded-For $http_x_forwarded_for";
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    # nginx.ingress.kubernetes.io/backend-protocol: HTTP
+  hosts:
+    - host: crm.example.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: crm-example-tls
+  #    hosts:
+  #      - crm.example.local

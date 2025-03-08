@@ -20,17 +20,17 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "twentycrm.labels" . | nindent 4 }}
+        {{- include "twentycrm.labels" . | nindent 8 }}
         app.twentycrm/component: {{ include "twentycrm.servername" . }}
     spec:
       serviceAccountName: {{ include "twentycrm.serviceAccountName" . }}
       volumes:
-        - name: {{- printf "%s-data" ( include "twentycrm.servername" .) }}
+        - name: {{ printf "%s-data" ( include "twentycrm.servername" .) }}
           persistentVolumeClaim:
-            claimName: {{- printf "%s-pvc" ( include "twentycrm.servername" .) }}
-        - name: {{- printf "%s-docker-data" ( include "twentycrm.name" .) }}
+            claimName: {{ printf "%s-pvc" ( include "twentycrm.servername" .) }}
+        - name: {{ printf "%s-docker-data" ( include "twentycrm.name" .) }}
           persistentVolumeClaim:
-            claimName: {{- printf "%s-docker-data-pvc" ( include "twentycrm.name" .) }}
+            claimName: {{ printf "%s-docker-data-pvc" ( include "twentycrm.name" .) }}
       containers:
         - name: twentycrm
           image: {{ .Values.server.image }}
@@ -51,8 +51,8 @@ spec:
           tty: true
           volumeMounts:
             - mountPath: /app/packages/twenty-server/.local-storage
-              name: {{- printf "%s-data" ( include "twentycrm.servername" .) }}
+              name: {{ printf "%s-data" ( include "twentycrm.servername" .) }}
             - mountPath: /app/docker-data
-              name: {{- printf "%s-docker-data" ( include "twentycrm.name" .) }}
+              name: {{ printf "%s-docker-data" ( include "twentycrm.name" .) }}
       dnsPolicy: ClusterFirst
       restartPolicy: Always

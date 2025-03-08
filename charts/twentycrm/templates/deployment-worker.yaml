@@ -20,7 +20,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "twentycrm.labels" . | nindent 4 }}
+        {{- include "twentycrm.labels" . | nindent 8 }}
         app.twentycrm/component: {{ include "twentycrm.workername" . }}
     spec:
       serviceAccountName: {{ include "twentycrm.serviceAccountName" . }}

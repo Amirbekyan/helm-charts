@@ -21,7 +21,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "twentycrm.labels" . | nindent 4 }}
+        {{- include "twentycrm.labels" . | nindent 8 }}
         app.twentycrm/component: {{ include "twentycrm.redisname" . }}
     spec:
       serviceAccountName: {{ include "twentycrm.serviceAccountName" . }}

@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{- printf "%s-docker-data-pvc" ( include "twentycrm.name" .) }}
+  name: {{ printf "%s-docker-data-pvc" ( include "twentycrm.name" .) }}
   labels:
     {{- include "twentycrm.labels" . | nindent 4 }}
 spec:
-  storageClassName: {{- default .Values.persistence.default.storageClass .Values.persistence.data.storageClass }}
+  storageClassName: {{ default .Values.persistence.default.storageClass .Values.persistence.data.storageClass }}
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{- default .Values.persistence.default.size .Values.persistence.data.size }}
+      storage: {{ default .Values.persistence.default.size .Values.persistence.data.size }}
