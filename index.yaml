@@ -79,4 +79,18 @@ entries:
     urls:
     - frigate-0.0.2.tgz
     version: 0.0.2
-generated: "2025-02-09T10:21:07.088062295Z"
+  twentycrm:
+  - apiVersion: v2
+    appVersion: 0.42.0
+    created: "2025-03-08T20:23:33.568990916Z"
+    description: A Helm chart for Twenty CRM by TwentyHQ
+    digest: 96ecc904e1fc92dfc2a47fcd048a5c078cb53a3facac4c2c98fef86cd6c5718f
+    maintainers:
+    - email: mousheghamirbekyan@gmail.com
+      name: Amirbekyan
+    name: twentycrm
+    type: application
+    urls:
+    - twentycrm-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-03-08T20:23:33.569007617Z"
