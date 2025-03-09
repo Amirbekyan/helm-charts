@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "nocobase.labels" . | nindent 4 }}
+    app.nocobase/component: {{ include "nocobase.servername" . }}
+  name: {{ include "nocobase.servername" . }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "nocobase.selectorLabels" . | nindent 6 }}
+      app.nocobase/component: {{ include "nocobase.servername" . }}
+  template:
+    metadata:
+      labels:
+        {{- include "nocobase.labels" . | nindent 8 }}
+        app.nocobase/component: {{ include "nocobase.servername" . }}
+    spec:
+      serviceAccountName: {{ include "nocobase.serviceAccountName" . }}
+      volumes:
+        - name: {{ printf "%s-data" ( include "nocobase.servername" .) }}
+          persistentVolumeClaim:
+            claimName: {{ printf "%s-pvc" ( include "nocobase.servername" .) }}
+      containers:
+        - name: nocobase
+          image: {{ .Values.server.image }}
+          imagePullPolicy: Always
+          {{- with .Values.server.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - containerPort: 13000
+              name: http-tcp
+              protocol: TCP
+          {{- with .Values.server.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          stdin: true
+          tty: true
+          volumeMounts:
+            - mountPath: /app/nocobase/storage
+              name: {{ printf "%s-data" ( include "nocobase.servername" .) }}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
