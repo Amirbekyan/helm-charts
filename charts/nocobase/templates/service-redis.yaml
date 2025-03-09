@@ -1,0 +1,23 @@
+{{- if .Values.redis.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nocobase.redisname" . }}
+  labels:
+    {{- include "nocobase.labels" . | nindent 4 }}
+    app.nocobase/component: {{ include "nocobase.redisname" . }}
+spec:
+  internalTrafficPolicy: Cluster
+  ports:
+    - port: 6379
+      protocol: TCP
+      targetPort: 6379
+  selector:
+    {{- include "nocobase.selectorLabels" . | nindent 4 }}
+    app.nocobase/component: {{ include "nocobase.redisname" . }}
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  type: ClusterIP
+{{- end }}

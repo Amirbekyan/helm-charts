@@ -1,0 +1,9 @@
+apiVersion: v2
+name: nocobase
+description: A Helm chart for Nocobase 
+maintainers:
+- name: Amirbekyan
+  email: mousheghamirbekyan@gmail.com
+type: application
+version: 0.1.0
+appVersion: 1.5.24
