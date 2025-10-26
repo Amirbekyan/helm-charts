@@ -1,0 +1,58 @@
+{{- if .Values.postgresql.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "nocobase.labels" . | nindent 4 }}
+    app.nocobase/component: {{ include "nocobase.dbname" . }}
+  name: {{ include "nocobase.dbname" . }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "nocobase.selectorLabels" . | nindent 6 }}
+      app.nocobase/component: {{ include "nocobase.dbname" . }}
+  template:
+    metadata:
+      labels:
+        {{- include "nocobase.labels" . | nindent 8 }}
+        app.nocobase/component: {{ include "nocobase.dbname" . }}
+    spec:
+      serviceAccountName: {{ include "nocobase.serviceAccountName" . }}
+      volumes:
+        - name: {{ printf "%s-data" ( include "nocobase.dbname" .) }}
+          persistentVolumeClaim:
+            claimName: {{ printf "%s-pvc" ( include "nocobase.dbname" .) }}
+      containers:
+        - name: postgres
+          image: {{ .Values.postgresql.image }}
+          imagePullPolicy: Always
+          args:
+            - -c
+            - wal_level=logical
+          {{- with .Values.postgresql.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - containerPort: 5432
+              name: tcp
+              protocol: TCP
+          {{- with .Values.postgresql.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          stdin: true
+          tty: true
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: {{ printf "%s-data" ( include "nocobase.dbname" .) }}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+{{- end }}

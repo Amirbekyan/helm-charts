@@ -1,0 +1,15 @@
+{{- if .Values.postgresql.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ printf "%s-pvc" ( include "nocobase.dbname" .) }}
+  labels:
+    {{- include "nocobase.labels" . | nindent 4 }}
+spec:
+  storageClassName: {{ .Values.postgresql.persistence.storageClass }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.postgresql.persistence.size }}
+{{- end }}
