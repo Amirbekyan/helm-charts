@@ -64,6 +64,7 @@ data:
       "internals": {
         "process_throttle_secs": 2
       },
+      "user_data_dir": "user_data",
       "add_config_files": [
         "config-pairs.json",
         "config-telegram.json",

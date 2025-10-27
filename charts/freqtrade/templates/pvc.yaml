@@ -1,0 +1,19 @@
+{{- if .Values.pvc.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{- include "freqtrade.fullname" . }}-user-data
+  labels:
+    {{- include "freqtrade.labels" . | nindent 4 }}
+  {{- with .Values.pvc.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    {{- toYaml .Values.pvc.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.size }}
+  storageClassName: {{ .Values.pvc.storageClass }}
+{{- end }}

@@ -6,73 +6,95 @@ metadata:
     {{- include "freqtrade.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.deployment.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
       {{- include "freqtrade.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- with .Values.deployment.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         {{- include "freqtrade.labels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
+        {{- with .Values.deployment.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- with .Values.deployment.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "freqtrade.serviceAccountName" . }}
-      {{- with .Values.podSecurityContext }}
+      {{- with .Values.deployment.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      containers:
-        - name: {{ .Chart.Name }}
-          {{- with .Values.securityContext }}
+      initContainers:
+        - name: init
+          {{- with .Values.deployment.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.deployment.initContainer.image.repository }}:{{ .Values.deployment.initContainer.image.tag | default .Chart.AppVersion }}"
+          command:
+            {{- toYaml .Values.deployment.initContainer.command | nindent 12 }}
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.secret.name }}
+          {{- with include "freqtrade.volumeMounts" . }}
+          volumeMounts:
+            {{- . | nindent 12 }}
+          {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with .Values.deployment.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag | default .Chart.AppVersion }}"
+          command:
+            {{- toYaml .Values.deployment.command | nindent 12 }}
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.secret.name }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          {{- with .Values.livenessProbe }}
+          {{- with .Values.deployment.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.readinessProbe }}
+          {{- with .Values.deployment.readinessProbe }}
           readinessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.resources }}
+          {{- with .Values.deployment.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.volumeMounts }}
+          {{- with include "freqtrade.volumeMounts" . }}
           volumeMounts:
-            {{- toYaml . | nindent 12 }}
+            {{- . | nindent 12 }}
           {{- end }}
-      {{- with .Values.volumes }}
+      {{- with include "freqtrade.volumes" . }}
       volumes:
-        {{- toYaml . | nindent 8 }}
+        {{- . | nindent 8 }}
       {{- end }}
-      {{- with .Values.nodeSelector }}
+      {{- with .Values.deployment.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with .Values.deployment.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with .Values.deployment.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}

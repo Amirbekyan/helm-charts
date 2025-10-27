@@ -60,3 +60,34 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "freqtrade.volumes" -}}
+- name: strategies
+  configMap:
+    name: {{ include "freqtrade.fullname" . }}-strategies
+- name: configs
+  configMap:
+    name: {{ include "freqtrade.fullname" . }}-configs
+{{- if .Values.pvc.enabled }}
+- name: user-data
+  persistentVolumeClaim:
+    claimName: {{- include "freqtrade.fullname" . }}-user-data
+{{- end }}
+{{- with .Values.deployment.volumes }}
+{{ toYaml . }}
+{{- end }}
+{{- end -}}
+
+{{- define "freqtrade.volumeMounts" -}}
+- name: strategies
+  mountpath: /freqtrade/user_data/strategies
+- name: configs
+  mountpath: /freqtrade/user_data/configs
+{{- if .Values.pvc.enabled }}
+- name: user-data
+  mountPath: /freqtrade/user_data
+{{- end }}
+{{- with .Values.deployment.volumeMounts }}
+{{ toYaml . }}
+{{- end }}
+{{- end -}}
