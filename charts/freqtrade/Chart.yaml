@@ -1,0 +1,9 @@
+apiVersion: v2
+name: freqtrade
+description: A Helm chart for Freqtrade
+maintainers:
+- name: Amirbekyan
+  email: mousheghamirbekyan@gmail.com
+type: application
+version: 0.1.10
+appVersion: stable
