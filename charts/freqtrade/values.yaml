@@ -3,6 +3,7 @@ fullnameOverride: ""
 
 config:
   dryRun: true
+  dbEnabled: true
   timeFrame: 5m
   maxOpenTrades: 50
   stakeAmount: 10
@@ -15,14 +16,21 @@ config:
   cancelOpenOrdersOnExit: false
   entryPricing:
     price_side: bid
-    use_order_book: false
+    use_order_book: true
     price_last_balance: 0.0
   exitPricing:
     price_side: ask
-    user_order_book: false
+    user_order_book: true
   exchange: binance
   botName: freqtrade-scalp
-  strategy: Scalp
+  strategy: SmoothScalp 
+  # SampleStrategy
+  # BinHV45
+  # QuickScalp_BB
+  # QuickScalp_RSI
+  # ReinforcedSmoothScalp
+  # Scalp
+  # SmoothScalp
 
 secret:
   name: freqtrade-secret
@@ -486,6 +494,7 @@ serviceAccount:
   name: ""
 
 service:
+  enabled: true
   type: ClusterIP
   ports:
     main:
@@ -512,7 +521,10 @@ deployment:
     pullPolicy: IfNotPresent
     tag: stable
   command:
+    - freqtrade
     - trade
+    - --config
+    - user_data/configs/config.json
 
   initContainer:
     image:
@@ -520,7 +532,11 @@ deployment:
       pullPolicy: IfNotPresent
       tag: stable
     command:
-      - create-userdir
+      - /bin/bash
+      - -c
+      - |
+        [ -d /freqtrade/user_data/data ] || \
+        freqtrade create-userdir --userdir user_data
 
   podAnnotations: {}
   podLabels: {}
@@ -528,20 +544,23 @@ deployment:
   podSecurityContext: {}
     # fsGroup: 2000
 
-  securityContext: {}
+  securityContext:
     # capabilities:
     #   drop:
     #   - ALL
     # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+
 
   resources:
     requests:
       cpu: 400m
       memory: 400Mi
     limits:
-      cpu: 1
+      cpu: 2
       memory: 1Gi
 
   livenessProbe:
@@ -554,15 +573,15 @@ deployment:
       port: main
 
   volumes:
-    - name: foo
-      secret:
-        secretName: mysecret
-        optional: false
+    # - name: foo
+    #   secret:
+    #     secretName: mysecret
+    #     optional: false
 
   volumeMounts:
-    - name: foo
-      mountPath: "/etc/foo"
-      readOnly: true
+    # - name: foo
+    #   mountPath: "/etc/foo"
+    #   readOnly: true
 
   nodeSelector: {}
   tolerations: []
@@ -574,6 +593,7 @@ pvc:
     - ReadWriteOnce
   size: 2Gi
   storageClass: local-path
+  # storageClass: hcloud-server
   annotations: {}
 
 ingress:

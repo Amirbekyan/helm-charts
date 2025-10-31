@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "freqtrade.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "freqtrade.fullname" . }}:{{ .Values.service.ports.main.port }}']
   restartPolicy: Never

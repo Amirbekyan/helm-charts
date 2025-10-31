@@ -45,7 +45,7 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ .Values.secret.name }}
-          {{- with include "freqtrade.volumeMounts" . }}
+          {{- with include "freqtrade.initVolumeMounts" . }}
           volumeMounts:
             {{- . | nindent 12 }}
           {{- end }}
@@ -62,10 +62,19 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ .Values.secret.name }}
+          {{- if .Values.service.enabled -}}
+          {{- with .Values.service.ports.main }}
           ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
+            - containerPort: {{ .targetPort | default .port }}
+              protocol: {{ .protocol | default "TCP" }}
+              name: {{ .name | default "main" }}
+          {{- end }}
+          {{- range .Values.service.ports.extra }}
+            - containerPort: {{ .targetPort | default .port }}
+              protocol: {{ .protocol | default "TCP" }}
+              name: {{ .name | default "" }}
+          {{- end }}
+          {{- end }}
           {{- with .Values.deployment.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}

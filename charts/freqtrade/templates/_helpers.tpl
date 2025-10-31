@@ -62,27 +62,39 @@ Create the name of the service account to use
 {{- end }}
 
 {{- define "freqtrade.volumes" -}}
-- name: strategies
-  configMap:
-    name: {{ include "freqtrade.fullname" . }}-strategies
-- name: configs
-  configMap:
-    name: {{ include "freqtrade.fullname" . }}-configs
 {{- if .Values.pvc.enabled }}
 - name: user-data
   persistentVolumeClaim:
-    claimName: {{- include "freqtrade.fullname" . }}-user-data
+    claimName: {{ include "freqtrade.fullname" . }}-user-data
 {{- end }}
+- name: strategies
+  configMap:
+    name: {{ include "freqtrade.fullname" . }}-strategies
+    defaultMode: 0644
+- name: configs
+  configMap:
+    name: {{ include "freqtrade.fullname" . }}-configs
+    defaultMode: 0644
 {{- with .Values.deployment.volumes }}
 {{ toYaml . }}
 {{- end }}
 {{- end -}}
 
 {{- define "freqtrade.volumeMounts" -}}
+{{- if .Values.pvc.enabled }}
+- name: user-data
+  mountPath: /freqtrade/user_data
+{{- end }}
 - name: strategies
-  mountpath: /freqtrade/user_data/strategies
+  mountPath: /freqtrade/user_data/strategies
 - name: configs
-  mountpath: /freqtrade/user_data/configs
+  mountPath: /freqtrade/user_data/configs
+{{- with .Values.deployment.volumeMounts }}
+{{ toYaml . }}
+{{- end }}
+{{- end -}}
+
+{{- define "freqtrade.initVolumeMounts" -}}
 {{- if .Values.pvc.enabled }}
 - name: user-data
   mountPath: /freqtrade/user_data
