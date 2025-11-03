@@ -53,6 +53,7 @@ data:
       },
       "pairlists": [
           {"method": "StaticPairList"},
+          {{- if .volumePairList }}
           {
             "method": "VolumePairList",
             "number_assets": 50,
@@ -60,6 +61,7 @@ data:
             "min_value": 1000000,
             "refresh_period": 600
           }
+          {{- end }}
       ],
       "bot_name": {{ quote .botName }},
       "strategy": {{ quote .strategy }},

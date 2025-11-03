@@ -13,6 +13,7 @@ config:
     0: 0.025
     20: 0.0125
     40: 0.005
+  volumePairList: false
   cancelOpenOrdersOnExit: false
   entryPricing:
     price_side: bid
@@ -23,7 +24,7 @@ config:
     user_order_book: true
   exchange: binance
   botName: freqtrade-scalp
-  strategy: SmoothScalp 
+  strategy: SampleStrategy 
   # SampleStrategy
   # BinHV45
   # QuickScalp_BB
@@ -522,7 +523,8 @@ deployment:
     tag: stable
   command:
     - freqtrade
-    - trade
+    # - trade
+    - webserver
     - --config
     - user_data/configs/config.json
 
@@ -557,11 +559,11 @@ deployment:
 
   resources:
     requests:
-      cpu: 400m
-      memory: 400Mi
+      cpu: 1
+      memory: 1Gi
     limits:
       cpu: 2
-      memory: 1Gi
+      memory: 2Gi
 
   livenessProbe:
     httpGet:
