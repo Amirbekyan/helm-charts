@@ -4,7 +4,7 @@ fullnameOverride: ""
 config:
   dryRun: true
   dbEnabled: true
-  timeFrame: 5m
+  timeFrame: 15m
   maxOpenTrades: 50
   stakeAmount: 10
   stakeCurrency: USDT
@@ -523,8 +523,8 @@ deployment:
     tag: stable
   command:
     - freqtrade
-    # - trade
-    - webserver
+    - trade
+    # - webserver
     - --config
     - user_data/configs/config.json
 
@@ -563,7 +563,7 @@ deployment:
       memory: 1Gi
     limits:
       cpu: 2
-      memory: 2Gi
+      memory: 4Gi
 
   livenessProbe:
     httpGet:

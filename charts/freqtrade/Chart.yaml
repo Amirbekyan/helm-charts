@@ -5,5 +5,11 @@ maintainers:
 - name: Amirbekyan
   email: mousheghamirbekyan@gmail.com
 type: application
-version: 0.1.16
+version: 0.1.18
 appVersion: stable
+sources:
+  - https://github.com/freqtrade/freqtrade
+  - https://github.com/freqtrade/freqtrade/blob/develop/config_examples/config_full.example.json
+  - https://github.com/freqtrade/freqtrade-strategies/blob/main/user_data/strategies
+  - https://freqst.com/
+  - https://github.com/davidzr/freqtrade-strategies/
