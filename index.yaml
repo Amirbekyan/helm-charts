@@ -1,5 +1,25 @@
 apiVersion: v1
 entries:
+  freqtrade:
+  - apiVersion: v2
+    appVersion: stable
+    created: "2025-12-11T20:04:16.786152471Z"
+    description: A Helm chart for Freqtrade
+    digest: afea60de3b3b66a79052c3978bc1e081d00b454099b5b5b07da449cc15b970a4
+    maintainers:
+    - email: mousheghamirbekyan@gmail.com
+      name: Amirbekyan
+    name: freqtrade
+    sources:
+    - https://github.com/freqtrade/freqtrade
+    - https://github.com/freqtrade/freqtrade/blob/develop/config_examples/config_full.example.json
+    - https://github.com/freqtrade/freqtrade-strategies/blob/main/user_data/strategies
+    - https://freqst.com/
+    - https://github.com/davidzr/freqtrade-strategies/
+    type: application
+    urls:
+    - freqtrade-0.1.20.tgz
+    version: 0.1.20
   frigate:
   - apiVersion: v2
     appVersion: latest
@@ -107,4 +127,4 @@ entries:
     urls:
     - twentycrm-0.1.0.tgz
     version: 0.1.0
-generated: "2025-10-26T20:00:48.188618949Z"
+generated: "2025-12-11T20:04:16.786173069Z"
