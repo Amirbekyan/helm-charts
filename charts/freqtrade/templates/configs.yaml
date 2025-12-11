@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "freqtrade.fullname" . }}-configs
+  labels:
+    {{- include "freqtrade.labels" . | nindent 4 }}
+data:
+  config-pairs.json: |
+    {
+      "exchange": {
+        "pair_whitelist": {{ toJson .Values.pairs }}
+      }
+    }
+  config-api.json: |
+    {
+      {{- with .Values.apiServer }}
+      "api_server": {
+        "enabled": {{ .enabled }},
+        "listen_ip_address": {{ quote .listenAddress }},
+        "listen_port": {{ .listenPort }},
+        "verbosity": {{ quote .verbosity }},
+        "jwt_secret_key": {{ quote .jwtSecretKey }},
+        "CORS_origins": [],
+        "username": {{ quote .user }},
+        "password": {{ quote .pass }}
+      }
+      {{- end }}
+    }
+  config-telegram.json: |
+    {
+      "telegram": {{ toPrettyJson .Values.telegram | indent 8 }}
+    }
+  config.json: |
+    {
+      {{- with .Values.config }}
+      "dry_run": {{ .dryRun }},
+      "timeframe": {{ quote .timeFrame }},
+      "max_open_trades": {{ .maxOpenTrades }},
+      "stake_amount": {{ .stakeAmount }},
+      "stake_currency": {{ quote .stakeCurrency }},
+      "fiat_display_currency": {{ quote .displayCurrency }},
+      {{- if .minimalRoi }}
+      "minimal_roi": {{ toJson .minimalRoi }},
+      {{- end }}
+      "cancel_open_orders_on_exit": {{ .cancelOpenOrdersOnExit }},
+      "unfilledtimeout": {
+        "entry": 3,
+        "exit": 3,
+        "unit": "minutes"
+      },
+      "entry_pricing": {{ toJson .entryPricing }},
+      "exit_pricing": {{ toJson .exitPricing }},
+      "exchange": {
+        "name": {{ quote .exchange }},
+      },
+      "pairlists": [
+          {"method": "StaticPairList"},
+          {{- if .volumePairList }}
+          {
+            "method": "VolumePairList",
+            "number_assets": 50,
+            "sort_key": "quoteVolume", 
+            "min_value": 1000000,
+            "refresh_period": 600
+          }
+          {{- end }}
+      ],
+      "bot_name": {{ quote .botName }},
+      "strategy": {{ quote .strategy }},
+      "initial_state": "running",
+      "internals": {
+        "process_throttle_secs": 2
+      },
+      "user_data_dir": "user_data",
+      {{- if and .dbEnabled .dryRun }}
+      "db_url": "sqlite:///user_data/tradesv3.dry_run.sqlite",
+      {{- else if .dbEnabled }}
+      "db_url": "sqlite:///user_data/tradesv3.sqlite",
+      {{- end }}
+      "add_config_files": [
+        "config-pairs.json",
+        "config-telegram.json",
+        "config-api.json"
+      ]
+      {{- end }}
+    }

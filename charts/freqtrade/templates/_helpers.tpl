@@ -1,0 +1,105 @@
+{{/*
+Expand the name of the chart.
+*/}}
+{{- define "freqtrade.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+If release name contains chart name it will be used as a full name.
+*/}}
+{{- define "freqtrade.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "freqtrade.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Common labels
+*/}}
+{{- define "freqtrade.labels" -}}
+helm.sh/chart: {{ include "freqtrade.chart" . }}
+{{ include "freqtrade.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "freqtrade.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "freqtrade.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "freqtrade.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "freqtrade.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{- define "freqtrade.volumes" -}}
+{{- if .Values.pvc.enabled }}
+- name: user-data
+  persistentVolumeClaim:
+    claimName: {{ include "freqtrade.fullname" . }}-user-data
+{{- end }}
+- name: strategies
+  configMap:
+    name: {{ include "freqtrade.fullname" . }}-strategies
+    defaultMode: 0644
+- name: configs
+  configMap:
+    name: {{ include "freqtrade.fullname" . }}-configs
+    defaultMode: 0644
+{{- with .Values.deployment.volumes }}
+{{ toYaml . }}
+{{- end }}
+{{- end -}}
+
+{{- define "freqtrade.volumeMounts" -}}
+{{- if .Values.pvc.enabled }}
+- name: user-data
+  mountPath: /freqtrade/user_data
+{{- end }}
+- name: strategies
+  mountPath: /freqtrade/user_data/strategies
+- name: configs
+  mountPath: /freqtrade/user_data/configs
+{{- with .Values.deployment.volumeMounts }}
+{{ toYaml . }}
+{{- end }}
+{{- end -}}
+
+{{- define "freqtrade.initVolumeMounts" -}}
+{{- if .Values.pvc.enabled }}
+- name: user-data
+  mountPath: /freqtrade/user_data
+{{- end }}
+{{- with .Values.deployment.volumeMounts }}
+{{ toYaml . }}
+{{- end }}
+{{- end -}}
