@@ -5,7 +5,7 @@ maintainers:
 - name: Amirbekyan
   email: mousheghamirbekyan@gmail.com
 type: application
-version: 0.1.18
+version: 0.1.20
 appVersion: stable
 sources:
   - https://github.com/freqtrade/freqtrade

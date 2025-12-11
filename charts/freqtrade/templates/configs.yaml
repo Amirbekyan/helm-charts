@@ -39,7 +39,9 @@ data:
       "stake_amount": {{ .stakeAmount }},
       "stake_currency": {{ quote .stakeCurrency }},
       "fiat_display_currency": {{ quote .displayCurrency }},
+      {{- if .minimalRoi }}
       "minimal_roi": {{ toJson .minimalRoi }},
+      {{- end }}
       "cancel_open_orders_on_exit": {{ .cancelOpenOrdersOnExit }},
       "unfilledtimeout": {
         "entry": 3,

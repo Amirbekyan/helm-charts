@@ -4,15 +4,15 @@ fullnameOverride: ""
 config:
   dryRun: true
   dbEnabled: true
-  timeFrame: 15m
+  timeFrame: 5m
   maxOpenTrades: 50
   stakeAmount: 10
   stakeCurrency: USDT
   displayCurrency: USD
-  minimalRoi:
-    0: 0.025
-    20: 0.0125
-    40: 0.005
+  # minimalRoi:
+  #   0: 0.025
+  #   20: 0.0125
+  #   40: 0.005
   volumePairList: false
   cancelOpenOrdersOnExit: false
   entryPricing:
@@ -24,7 +24,7 @@ config:
     user_order_book: true
   exchange: binance
   botName: freqtrade-scalp
-  strategy: SampleStrategy 
+  strategy: ichiV1 
   # SampleStrategy
   # BinHV45
   # QuickScalp_BB
