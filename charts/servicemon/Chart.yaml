@@ -1,0 +1,8 @@
+apiVersion: v2
+name: servicemon
+description: A Helm chart for Prometheus Operator ServiceMonitors
+maintainers:
+- name: Amirbekyan
+  email: mousheghamirbekyan@gmail.com
+type: application
+version: 0.1.0

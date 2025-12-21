@@ -1,0 +1,29 @@
+servicemonitors:
+  - name: chaos-mesh-daemon
+    namespace: chaos-mesh
+    labels:
+      release: prometheus
+    selector:
+      app.kubernetes.io/component: worker-metrics
+      app.kubernetes.io/instance: chaos-mesh
+      app.kubernetes.io/name: chaos-mesh
+    endpoints:
+      - port: metric
+        path: /metrics
+  - name: chaos-mesh-dash
+    selector:
+      app.kubernetes.io/instance: chaos-mesh
+      app.kubernetes.io/name: chaos-mesh
+    endpoints:
+    - interval: 30s
+      path: /metrics
+      port: metric
+      scrapeTimeout: 3s
+    - interval: 30s
+      path: /metrics
+      port: http
+      scrapeTimeout: 3s
+    - interval: 30s
+      path: /metrics
+      port: metrics
+      scrapeTimeout: 3s
