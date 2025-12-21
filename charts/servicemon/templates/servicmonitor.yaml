@@ -1,0 +1,30 @@
+{{ range .Values.servicemonitors -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    {{- include "servicemon.labels" $ | nindent 4 }}
+    {{- if .labels }}
+    {{- toYaml .labels | nindent 4 }}
+    {{- end }}
+  name: {{ .name }}
+spec:
+  endpoints:
+  {{ range .endpoints -}}
+  - interval: {{ .interval | default "30s" }}
+    path: {{ .path | default "/metrics" }}
+    port: {{ .port | default "metrics" }}
+    scrapeTimeout: {{ .scrapeTimeout | default "3s" }}
+  {{ end -}}
+  {{ with .namespace -}}
+  namespaceSelector:
+    matchNames:
+    - {{ . }}
+  {{- end }}
+  {{ with .selector -}}
+  selector:
+    matchLabels:
+      {{- toYaml . | nindent 6 }}
+  {{- end }}
+---
+{{ end }}
