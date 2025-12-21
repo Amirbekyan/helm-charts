@@ -113,6 +113,19 @@ entries:
     urls:
     - nocobase-0.1.0.tgz
     version: 0.1.0
+  servicemon:
+  - apiVersion: v2
+    created: "2025-12-21T11:13:15.39995436Z"
+    description: A Helm chart for Prometheus Operator ServiceMonitors
+    digest: 48672c79d26aaf775b4734c6dfdb9deb873784d7b1ef4ab63f61f3880eb965b0
+    maintainers:
+    - email: mousheghamirbekyan@gmail.com
+      name: Amirbekyan
+    name: servicemon
+    type: application
+    urls:
+    - servicemon-0.1.0.tgz
+    version: 0.1.0
   twentycrm:
   - apiVersion: v2
     appVersion: 0.42.0
@@ -127,4 +140,4 @@ entries:
     urls:
     - twentycrm-0.1.0.tgz
     version: 0.1.0
-generated: "2025-12-11T20:04:16.786173069Z"
+generated: "2025-12-21T11:13:15.39997418Z"
